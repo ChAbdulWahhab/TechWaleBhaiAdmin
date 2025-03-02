@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Add Wholesaler{% endblock %}
+
+{% block content %}
+<div class="max-w-full mx-auto py-6">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Add Wholesaler</h2>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <form method="POST">
+                <div class="mb-4">
+                    <label for="shop_name" class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-store mr-2"></i>Shop Name
+                    </label>
+                    <input type="text" id="shop_name" name="shop_name" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="wholesaler_name" class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-user-tie mr-2"></i>Wholesaler Name
+                    </label>
+                    <input type="text" id="wholesaler_name" name="wholesaler_name" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-phone mr-2"></i>Phone Number
+                    </label>
+                    <input type="tel" id="phone_number" name="phone_number"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="return_policy" name="return_policy"
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                        <span class="ml-2 text-sm text-gray-700">
+                            <i class="fas fa-exchange-alt mr-2"></i>Return/Exchange Policy
+                        </span>
+                    </label>
+                </div>
+                
+                <button type="submit" 
+                    class="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+                    <i class="fas fa-plus-circle mr-2"></i>Add Wholesaler
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('index') }}" 
+        class="inline-flex items-center mt-6 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+    </a>
+</div>
+{% endblock %}
+

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}Product Price Calculator{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-full mx-auto space-y-6">
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Product Price Calculator</h2>
+    
+    <div class="bg-white rounded-lg shadow-md">
+        <div class="p-6">
+            <form id="priceForm" class="space-y-6">
+                <!-- Actual Price -->
+                <div class="space-y-2">
+                    <label for="actualPrice" class="flex items-center text-sm font-medium text-gray-700">
+                        <i class="fas fa-money-bill-wave mr-2 text-primary-600"></i>Actual Price
+                    </label>
+                    <input type="number" 
+                           id="actualPrice" 
+                           name="actualPrice" 
+                           placeholder="Enter actual price" 
+                           required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+
+                <!-- Packaging Section -->
+                <div class="space-y-4">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="packagingToggle" name="packagingToggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ml-3 text-sm font-medium text-gray-700 flex items-center">
+                            <i class="fas fa-box-open mr-2 text-primary-600"></i>Include Packaging Price?
+                        </span>
+                    </label>
+                    
+                    <div id="packagingDiv" class="hidden">
+                        <label for="packagingPrice" class="flex items-center text-sm font-medium text-gray-700">
+                            <i class="fas fa-box mr-2 text-primary-600"></i>Packaging Price
+                        </label>
+                        <input type="number" 
+                               id="packagingPrice" 
+                               name="packagingPrice" 
+                               placeholder="Enter packaging price"
+                               class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                    </div>
+                </div>
+
+                <!-- Sticker Section -->
+                <div class="space-y-4">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="stickerToggle" name="stickerToggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ml-3 text-sm font-medium text-gray-700 flex items-center">
+                            <i class="fas fa-tag mr-2 text-primary-600"></i>Include Sticker Price?
+                        </span>
+                    </label>
+                    
+                    <div id="stickerDiv" class="hidden">
+                        <label for="stickerPrice" class="flex items-center text-sm font-medium text-gray-700">
+                            <i class="fas fa-stamp mr-2 text-primary-600"></i>Sticker Price
+                        </label>
+                        <input type="number" 
+                               id="stickerPrice" 
+                               name="stickerPrice" 
+                               placeholder="Enter sticker price"
+                               class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                    </div>
+                </div>
+
+                <!-- Delivery Charges -->
+                <div class="space-y-2">
+                    <label for="deliveryCharges" class="flex items-center text-sm font-medium text-gray-700">
+                        <i class="fas fa-shipping-fast mr-2 text-primary-600"></i>Delivery Charges
+                    </label>
+                    <input type="number" 
+                           id="deliveryCharges" 
+                           name="deliveryCharges" 
+                           placeholder="Enter delivery charges" 
+                           required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+
+                <!-- Profit -->
+                <div class="space-y-2">
+                    <label for="profit" class="flex items-center text-sm font-medium text-gray-700">
+                        <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>Profit
+                    </label>
+                    <input type="number" 
+                           id="profit" 
+                           name="profit" 
+                           placeholder="Enter desired profit" 
+                           required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                </div>
+
+                <button type="button" 
+                        onclick="calculateModifiedCost()"
+                        class="w-72 px-2 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors">
+                    <i class="fas fa-calculator mr-2"></i>Calculate Modified Cost
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Result Section -->
+    <div id="result" class="hidden animate-fade-in">
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-green-400"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-green-800" id="resultText"></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ url_for('index') }}" 
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+    </a>
+</div>
+
+<style>
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+    // Packaging toggle functionality
+    document.getElementById('packagingToggle').addEventListener('change', function() {
+        const packagingDiv = document.getElementById('packagingDiv');
+        if (this.checked) {
+            packagingDiv.classList.remove('hidden');
+            packagingDiv.classList.add('animate-fade-in');
+        } else {
+            packagingDiv.classList.add('hidden');
+        }
+    });
+
+    // Sticker toggle functionality
+    document.getElementById('stickerToggle').addEventListener('change', function() {
+        const stickerDiv = document.getElementById('stickerDiv');
+        if (this.checked) {
+            stickerDiv.classList.remove('hidden');
+            stickerDiv.classList.add('animate-fade-in');
+        } else {
+            stickerDiv.classList.add('hidden');
+        }
+    });
+
+    // Calculate modified cost
+    function calculateModifiedCost() {
+        // Get values and convert to float
+        const actualPrice = parseFloat(document.getElementById('actualPrice').value) || 0;
+        let packagingPrice = 0;
+        let stickerPrice = 0;
+        const deliveryCharges = parseFloat(document.getElementById('deliveryCharges').value) || 0;
+        const profit = parseFloat(document.getElementById('profit').value) || 0;
+
+        // Add packaging price if toggle is checked
+        if (document.getElementById('packagingToggle').checked) {
+            packagingPrice = parseFloat(document.getElementById('packagingPrice').value) || 0;
+        }
+
+        // Add sticker price if toggle is checked
+        if (document.getElementById('stickerToggle').checked) {
+            stickerPrice = parseFloat(document.getElementById('stickerPrice').value) || 0;
+        }
+
+        // Calculate modified cost
+        const modifiedCost = actualPrice + packagingPrice + stickerPrice + deliveryCharges + profit;
+
+        // Display result
+        const resultDiv = document.getElementById('result');
+        const resultText = document.getElementById('resultText');
+        
+        resultDiv.classList.remove('hidden');
+        resultText.textContent = `Modified Cost: PKR ${modifiedCost.toFixed(2)}`;
+        
+        // Scroll to result
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+</script>
+{% endblock %}
+

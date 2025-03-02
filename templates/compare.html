@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Products{% endblock %}
+
+{% block content %}
+<div class="w-full py-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">Product Comparison</h2>
+        
+        <!-- Filter Options -->
+        <div class="flex space-x-2">
+            <a href="{{ url_for('compare', sort='low-high') }}"
+                class="inline-flex items-center px-4 py-2 rounded-lg {% if sort_order == 'low-high' %}bg-blue-600 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %} transition-colors duration-200">
+                <i class="fas fa-sort-amount-down-alt mr-2"></i>
+                <span class="text-sm font-medium">Low to High</span>
+            </a>
+            <a href="{{ url_for('compare', sort='high-low') }}"
+                class="inline-flex items-center px-4 py-2 rounded-lg {% if sort_order == 'high-low' %}bg-blue-600 text-white{% else %}bg-white text-gray-700 border border-gray-300 hover:bg-gray-50{% endif %} transition-colors duration-200">
+                <i class="fas fa-sort-amount-down mr-2"></i>
+                <span class="text-sm font-medium">High to Low</span>
+            </a>
+        </div>
+    </div>
+
+    {% if comparisons %}
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full whitespace-nowrap">
+                <thead>
+                    <tr class="bg-gray-50 text-left">
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Product Name
+                        </th>
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Lowest Price
+                        </th>
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Wholesaler
+                        </th>
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Shop Name
+                        </th>
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Phone Number
+                        </th>
+                        <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Return/Exchange Policy
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for comp in comparisons %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900">{{ comp.product_name }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                {{ comp.price }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900">{{ comp.wholesaler }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900">{{ comp.shop_name }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-500">{{ comp.phone_number or 'N/A' }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if comp.return_policy %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i> Yes
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-times-circle mr-1"></i> No
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-info-circle text-blue-400"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                    No products available for comparison.
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}" 
+        class="inline-flex items-center mt-6 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Back to Home
+    </a>
+</div>
+{% endblock %}
+

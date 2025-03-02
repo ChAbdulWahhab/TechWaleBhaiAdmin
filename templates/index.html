@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Tech Wale Bhai{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-full mx-auto space-y-8">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Dashboard</h1>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <div class="flex flex-col">
+                <h5 class="text-lg font-medium opacity-90">Total Wholesalers</h5>
+                <p class="text-4xl font-bold mt-2">{{ wholesalers_count }}</p>
+            </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <div class="flex flex-col">
+                <h5 class="text-lg font-medium opacity-90">Total Customers</h5>
+                <p class="text-4xl font-bold mt-2">{{ customers_count }}</p>
+            </div>
+        </div>
+        <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <div class="flex flex-col">
+                <h5 class="text-lg font-medium opacity-90">Total Products</h5>
+                <p class="text-4xl font-bold mt-2">{{ products_count }}</p>
+            </div>
+        </div>
+        <div class="bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <div class="flex flex-col">
+                <h5 class="text-lg font-medium opacity-90">Return Policy (%)</h5>
+                <p class="text-4xl font-bold mt-2">{{ return_policy_percentage }}%</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Recent Customers List -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h5 class="text-xl font-semibold text-gray-800">Recent Customers</h5>
+            </div>
+            <div class="p-6">
+                {% if recent_customers %}
+                <div class="divide-y divide-gray-200">
+                    {% for customer in recent_customers %}
+                    <div class="py-4 flex justify-between items-center">
+                        <span class="text-gray-900 font-medium">{{ customer.first_name }} {{ customer.last_name }}</span>
+                        <span class="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">{{ customer.email }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500">No recent customers found.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-xl shadow-md p-6 space-y-4">
+            <h5 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h5>
+            <a href="{{ url_for('add_wholesaler') }}" 
+                class="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full">
+                <i class="fas fa-plus-circle mr-2"></i>Add Wholesaler
+            </a>
+            <a href="{{ url_for('compare') }}" 
+                class="flex items-center justify-center px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors w-full">
+                <i class="fas fa-balance-scale mr-2"></i>Compare Products
+            </a>
+            <a href="{{ url_for('export') }}" 
+                class="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors w-full">
+                <i class="fas fa-file-export mr-2"></i>Export Data
+            </a>
+        </div>
+    </div>
+
+    <!-- Wholesalers List -->
+    <div class="space-y-6 transition-all">
+        <h2 class="text-2xl font-bold text-gray-900">Wholesalers</h2>
+        {% if wholesalers %}
+        <div class="space-y-6">
+            {% for wholesaler in wholesalers %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 flex justify-between items-center">
+                    <button class="flex items-center text-left focus:outline-none" 
+                            onclick="toggleCollapse('collapse{{ wholesaler.id }}')">
+                        <i class="fas fa-store mr-3 text-blue-600 text-2xl"></i>
+                        <div>
+                            <span class="font-semibold text-lg text-gray-900">{{ wholesaler.shop_name }}</span>
+                            <span class="text-sm text-gray-500 ml-2">({{ wholesaler.wholesaler_name }})</span>
+                        </div>
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <a href="{{ url_for('edit_wholesaler', wholesaler_id=wholesaler.id) }}"
+                            class="inline-flex items-center px-3 py-2 border border-yellow-500 text-yellow-600 rounded-md hover:bg-yellow-50 transition-colors">
+                            <i class="fas fa-edit mr-2"></i>Edit
+                        </a>
+                        <form action="{{ url_for('delete_wholesaler', wholesaler_id=wholesaler.id) }}" method="POST"
+                            class="inline-block" onsubmit="return confirm('Are you sure you want to delete this wholesaler?');">
+                            <button type="submit" 
+                                class="inline-flex items-center px-3 py-2 border border-red-500 text-red-600 rounded-md hover:bg-red-50 transition-colors">
+                                <i class="fas fa-trash-alt mr-2"></i>Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div id="collapse{{ wholesaler.id }}" class="hidden">
+                    <div class="p-6 border-t bg-gray-50">
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-phone mr-3 text-blue-500"></i>
+                                    <span class="font-medium mr-2">Phone Number:</span>
+                                    {{ wholesaler.phone_number or 'N/A' }}
+                                </p>
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-exchange-alt mr-3 text-blue-500"></i>
+                                    <span class="font-medium mr-2">Return/Exchange Policy:</span>
+                                    <span class="px-2 py-1 text-xs rounded-full {% if wholesaler.return_policy %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                        {{ 'Yes' if wholesaler.return_policy else 'No' }}
+                                    </span>
+                                </p>
+                            </div>
+
+                            <div class="mt-8">
+                                <h5 class="text-xl font-semibold text-gray-800 mb-4">
+                                    <i class="fas fa-box mr-3 text-blue-500"></i>Products
+                                </h5>
+                                {% if wholesaler.products %}
+                                <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                    {% for product in wholesaler.products %}
+                                    <div class="bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-200 p-4">
+                                        <div class="flex justify-between">
+                                            <div class="space-y-2">
+                                                <h6 class="font-semibold text-gray-900">{{ product.product_name }}</h6>
+                                                <p class="text-gray-700">
+                                                    <span class="font-medium">Price:</span>
+                                                    <span class="text-green-600">{{ product.price }}</span>
+                                                </p>
+                                                {% if product.description %}
+                                                <p class="text-sm text-gray-500">{{ product.description }}</p>
+                                                {% endif %}
+                                            </div>
+                                            {% if product.image_filename %}
+                                            <img src="{{ url_for('static', filename='uploads/' ~ product.image_filename) }}"
+                                                alt="{{ product.product_name }}" 
+                                                class="w-24 h-24 object-cover rounded-lg shadow-sm">
+                                            {% endif %}
+                                        </div>
+                                        <div class="mt-4 flex gap-3">
+                                            <a href="{{ url_for('edit_product', product_id=product.id) }}"
+                                                class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-yellow-500 text-yellow-600 rounded-md hover:bg-yellow-50 transition-colors">
+                                                <i class="fas fa-edit mr-2"></i>Edit
+                                            </a>
+                                            <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST"
+                                                class="flex-1 inline-block" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                                <button type="submit" 
+                                                    class="w-full inline-flex items-center justify-center px-3 py-2 border border-red-500 text-red-600 rounded-md hover:bg-red-50 transition-colors">
+                                                    <i class="fas fa-trash-alt mr-2"></i>Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <p class="text-gray-500">No products added yet.</p>
+                                {% endif %}
+                                <div class="mt-6">
+                                    <a href="{{ url_for('add_product', wholesaler_id=wholesaler.id) }}"
+                                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-plus-circle mr-2"></i>Add Product
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-info-circle text-blue-400 text-2xl"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-lg font-medium text-blue-700">No wholesalers found. Please add one.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleCollapse(id) {
+    const element = document.getElementById(id);
+    if (element.classList.contains('hidden')) {
+        element.classList.remove('hidden');
+    } else {
+        element.classList.add('hidden');
+    }
+}
+</script>
+{% endblock %}

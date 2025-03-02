@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="w-full max-w-full mx-auto px-4 py-8 space-y-10">
+    <div class="flex items-center justify-between border-b border-blue-100 pb-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800">
+            <span class="text-blue-600">Order Details</span>
+            <span class="text-gray-500 text-xl md:text-2xl ml-2">
+                #{{ order.id }}
+            </span>
+        </h2>
+        
+        <div class="hidden md:block">
+            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                <i class="fas fa-clipboard-check mr-2"></i>
+                {{ order.fulfillment_status }}
+            </span>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Order Information -->
+        <div class="w-full bg-white rounded-xl shadow-lg p-6 border border-blue-50 transition-all hover:shadow-xl">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-shopping-cart text-blue-600 mr-2"></i>
+                Order Information
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600 font-medium">Total Price:</span>
+                    <span class="text-xl font-bold text-blue-600">{{ order.order_total_price }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-gray-600 font-medium">Order Date/Time:</span>
+                    <span class="text-gray-800">
+                        <i class="far fa-calendar-alt text-blue-400 mr-1"></i>
+                        {{ order.order_datetime }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="w-full bg-white rounded-xl shadow-lg p-6 border border-blue-50 transition-all hover:shadow-xl">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-credit-card text-blue-600 mr-2"></i>
+                Payment Information
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600 font-medium">Payment Method:</span>
+                    <span class="text-gray-800 font-medium">{{ order.payment_method }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600 font-medium">Payment Status:</span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                        {% if order.payment_status == 'Paid' %}
+                            bg-green-100 text-green-800 border border-green-200
+                        {% elif order.payment_status == 'Pending' %}
+                            bg-yellow-100 text-yellow-800 border border-yellow-200
+                        {% else %}
+                            bg-red-100 text-red-800 border border-red-200
+                        {% endif %}">
+                        {{ order.payment_status }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-gray-600 font-medium">Fulfillment Status:</span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                        {% if order.fulfillment_status == 'Delivered' %}
+                            bg-green-100 text-green-800 border border-green-200
+                        {% elif order.fulfillment_status == 'Shipped' %}
+                            bg-blue-100 text-blue-800 border border-blue-200
+                        {% elif order.fulfillment_status == 'Processing' %}
+                            bg-yellow-100 text-yellow-800 border border-yellow-200
+                        {% else %}
+                            bg-gray-100 text-gray-800 border border-gray-200
+                        {% endif %}">
+                        {{ order.fulfillment_status }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="w-full bg-white rounded-xl shadow-lg p-6 border border-blue-50 transition-all hover:shadow-xl">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-user text-blue-600 mr-2"></i>
+            Customer Information
+        </h3>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-3">
+                <div class="flex items-start py-2">
+                    <span class="text-gray-600 font-medium w-24">Name:</span>
+                    <span class="text-gray-800 font-medium">{{ order.customer.first_name }} {{ order.customer.last_name }}</span>
+                </div>
+                <div class="flex items-start py-2">
+                    <span class="text-gray-600 font-medium w-24">Email:</span>
+                    <span class="text-gray-800">
+                        <a href="mailto:{{ order.customer.email }}" class="text-blue-600 hover:underline">
+                            {{ order.customer.email }}
+                        </a>
+                    </span>
+                </div>
+                <div class="flex items-start py-2">
+                    <span class="text-gray-600 font-medium w-24">Phone:</span>
+                    <span class="text-gray-800">{{ order.customer.phone_number }}</span>
+                </div>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-start py-2">
+                    <span class="text-gray-600 font-medium w-24">Country:</span>
+                    <span class="text-gray-800">{{ order.customer.country }}</span>
+                </div>
+                <div class="flex items-start py-2">
+                    <span class="text-gray-600 font-medium w-24">Address:</span>
+                    <span class="text-gray-800">{{ order.customer.address }}, {{ order.customer.city }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ordered Product Details -->
+    <div class="w-full">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-box text-blue-600 mr-2"></i>
+            Ordered Product Details
+        </h3>
+        <div class="space-y-4">
+            {% for item in order.order_items %}
+            <div class="bg-white rounded-xl shadow-md p-6 border border-blue-50 transition-all hover:shadow-lg hover:border-blue-100">
+                <div class="grid md:grid-cols-5 gap-4">
+                    <div class="md:col-span-2">
+                        <h4 class="font-bold text-gray-800 mb-1">{{ item.product_name }}</h4>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {{ item.color }}
+                        </span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 uppercase">Quantity</span>
+                        <span class="font-medium text-gray-800">{{ item.quantity }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 uppercase">Price</span>
+                        <span class="font-medium text-gray-800">{{ item.price }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 uppercase">Total</span>
+                        <span class="font-bold text-blue-600">{{ item.total }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

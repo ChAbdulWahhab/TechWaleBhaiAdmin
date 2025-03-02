@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Tech Wale Bhai | Wholesaler App{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/tech_wale_bhai.png') }}" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            sidebar: {
+              DEFAULT: '#1e293b',
+              foreground: '#f8fafc',
+              border: '#334155',
+              accent: '#334155',
+              'accent-foreground': '#f8fafc',
+              ring: '#3b82f6'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .toast-info {
+      background-color: white !important;
+      color: #333 !important;
+      border-radius: 0.5rem !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+      padding: 15px !important;
+      border-left: 5px solid #3b82f6 !important;
+    }
+    .skeleton {
+      background-color: #e2e8f0;
+      position: relative;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex">
+  <!-- Sidebar -->
+  <aside
+    id="sidebar"
+    class="bg-sidebar text-sidebar-foreground w-[270px] min-h-screen fixed left-0 top-0 z-30 flex flex-col transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0"
+  >
+    <div class="p-4 border-b border-sidebar-border">
+      <a class="flex items-center" href="{{ url_for('index') }}">
+        <img
+          src="{{ url_for('static', filename='icons/tech_wale_bhai.png') }}"
+          alt="Logo"
+          class="h-10 w-auto"
+        />
+        <span class="ml-2 font-bold text-lg">Tech Wale Bhai</span>
+      </a>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto py-4">
+      <ul class="space-y-1 px-2">
+        <!-- Home -->
+        <li>
+          <a
+            class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            href="{{ url_for('index') }}"
+          >
+            <i class="fas fa-home w-5 h-5 mr-3"></i>Home
+          </a>
+        </li>
+        <!-- Add Wholesaler -->
+        <li>
+          <a
+            class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            href="{{ url_for('add_wholesaler') }}"
+          >
+            <i class="fas fa-plus-circle w-5 h-5 mr-3"></i>Add Wholesaler
+          </a>
+        </li>
+
+        <!-- Tools Dropdown -->
+        <li x-data="{ open: false }" class="relative">
+          <button
+            @click="open = !open"
+            class="flex items-center justify-between w-full px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            <div class="flex items-center">
+              <i class="fas fa-tools w-5 h-5 mr-3"></i>
+              <span>Tools</span>
+            </div>
+            <i
+              class="fas fa-chevron-down text-xs transition-transform"
+              :class="{'rotate-180': open}"
+            ></i>
+          </button>
+          <ul x-show="open" x-transition class="pl-4 mt-1 space-y-1">
+            <li>
+              <a
+                class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                href="{{ url_for('compare') }}"
+              >
+                <i class="fas fa-balance-scale w-5 h-5 mr-3"></i>Compare
+              </a>
+            </li>
+            <li>
+              <a
+                class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                href="{{ url_for('product_calculator') }}"
+              >
+                <i class="fas fa-calculator w-5 h-5 mr-3"></i>Product Calculator
+              </a>
+            </li>
+            <li>
+              <a
+                class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                href="{{ url_for('investment') }}"
+              >
+                <i class="fas fa-chart-line w-5 h-5 mr-3"></i>Investment Calculator
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        {% if session.get('admin_logged_in') %}
+        <!-- My Sales Dropdown -->
+        <li x-data="{ open: false }" class="relative">
+          <button
+            @click="open = !open"
+            class="flex items-center justify-between w-full px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            <div class="flex items-center">
+              <i class="fas fa-shopping-cart w-5 h-5 mr-3"></i>
+              <span>My Sales</span>
+            </div>
+            <i
+              class="fas fa-chevron-down text-xs transition-transform"
+              :class="{'rotate-180': open}"
+            ></i>
+          </button>
+          <ul x-show="open" x-transition class="pl-4 mt-1 space-y-1">
+            <li>
+              <a
+                class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                href="{{ url_for('orders') }}"
+              >
+                <i class="fas fa-clipboard-list w-5 h-5 mr-3"></i>Orders
+              </a>
+            </li>
+            <li>
+              <a
+                class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                href="{{ url_for('customers') }}"
+              >
+                <i class="fas fa-users w-5 h-5 mr-3"></i>Customers
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Profile Dropdown -->
+        <li x-data="{ open: false }" class="relative">
+          <button
+            @click="open = !open"
+            class="flex items-center justify-between w-full px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            <div class="flex items-center">
+              <i class="fas fa-user w-5 h-5 mr-3"></i>
+              <span>{{ session.get('admin_name', 'Admin') }}</span>
+            </div>
+            <i
+              class="fas fa-chevron-down text-xs transition-transform"
+              :class="{'rotate-180': open}"
+            ></i>
+          </button>
+          <ul x-show="open" x-transition class="pl-4 mt-1 space-y-1">
+            <li>
+              <a
+                class="flex items-center px-4 py-2 text-sm rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                href="{{ url_for('settings') }}"
+              >
+                <i class="fas fa-cog w-5 h-5 mr-3"></i>Settings
+              </a>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <div class="mt-auto p-4 border-t border-sidebar-border">
+      {% if session.get('admin_logged_in') %}
+      <a
+        class="flex items-center justify-center px-4 py-2 text-sm rounded-md bg-red-500 hover:bg-red-600 text-white"
+        href="{{ url_for('logout') }}"
+      >
+        <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>Logout
+      </a>
+      {% else %}
+      <a
+        class="flex items-center justify-center px-4 py-2 text-sm rounded-md bg-blue-500 hover:bg-blue-600 text-white"
+        href="{{ url_for('admin_login') }}"
+      >
+        <i class="fas fa-sign-in-alt w-5 h-5 mr-3"></i>Login
+      </a>
+      {% endif %}
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 md:ml-72 flex flex-col min-h-screen">
+    <!-- Mobile Header -->
+    <header class="bg-white shadow-sm p-4 md:hidden flex items-center">
+      <button id="sidebarToggle" class="text-gray-600 hover:text-gray-900 focus:outline-none">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+      <a class="flex items-center ml-4" href="{{ url_for('index') }}">
+        <img
+          src="{{ url_for('static', filename='icons/tech_wale_bhai.png') }}"
+          alt="Logo"
+          class="h-8 w-auto"
+        />
+        <span class="ml-2 font-bold">Tech Wale Bhai</span>
+      </a>
+    </header>
+
+    <!-- Content Area -->
+    <main class="flex-1 p-6">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div
+        class="mb-4 p-4 {% if category == 'success' %}bg-green-100 text-green-800 border-l-4 border-green-500{% elif category == 'danger' %}bg-red-100 text-red-800 border-l-4 border-red-500{% elif category == 'warning' %}bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500{% else %}bg-blue-100 text-blue-800 border-l-4 border-blue-500{% endif %} rounded-r-md flex justify-between items-center"
+      >
+        <div>{{ message }}</div>
+        <button type="button" class="text-gray-500 hover:text-gray-700" onclick="this.parentElement.remove()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white py-4 border-t">
+      <div class="container mx-auto text-center text-gray-600">
+        &copy; 2025
+        <a target="_blank" href="https://techwalebhai.company.site/" class="text-primary hover:underline"
+          >Tech Wale Bhai</a
+        >
+        Wholesaler App. All rights reserved.
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <!-- Sidebar Active Link Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const currentPath = window.location.pathname.replace(/\/$/, "");
+      const sidebarLinks = document.querySelectorAll("aside nav a");
+
+      sidebarLinks.forEach(link => {
+        // Remove trailing slash for comparison
+        const linkPath = link.getAttribute("href").replace(/\/$/, "");
+        if (linkPath === currentPath) {
+          // Add active classes only to the link
+          link.classList.add("bg-sidebar-accent", "text-sidebar-accent-foreground");
+
+          // If the link is inside a dropdown, open that dropdown
+          const parentLi = link.closest("li[x-data]");
+          if (parentLi) {
+            const dropdownUl = parentLi.querySelector("ul[x-show]");
+            if (dropdownUl) {
+              // Force the dropdown to display so child is visible
+              dropdownUl.style.display = "block";
+            }
+            // Also rotate the arrow (Alpine)
+            if (parentLi.__x && parentLi.__x.$data.hasOwnProperty('open')) {
+              parentLi.__x.$data.open = true;
+            }
+            // **Don't** add accent classes to parent button so it doesn't look active
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- Performance Tips (Toastr) -->
+  <script>
+    $(document).ready(function () {
+      var performanceTips = [
+        "Product listings ko optimize karein taake customers ko sahi products jaldi mil sakein.",
+        "High-converting images aur product descriptions likhein taake sales increase ho.",
+        "Customer ka trust jeetne ke liye fast checkout aur multiple payment options dein.",
+        "Orders process karne ke liye automation ka use karein taake delays na ho.",
+        "Stock management ko automate karein taake out-of-stock products jaldi restock ho sakein.",
+        "Customer queries aur complaints ko handle karne ke liye chatbot ya automated responses ka use karein.",
+        "Personalized recommendations aur upselling strategies implement karein sales increase karne ke liye.",
+        "Website aur mobile app ka speed optimize karein taake customers experience smooth ho.",
+        "Abandoned carts ko recover karne ke liye follow-up emails ya discounts ka offer dein.",
+        "Customer reviews aur ratings ko highlight karein taake naye buyers ko trust mile.",
+        "SEO aur paid ads ka sahi tareeke se use karein taake organic aur paid traffic barh sake.",
+        "Festivals aur special events par time-limited deals aur flash sales chalayein sales boost karne ke liye.",
+        "Loyal customers ke liye reward programs ya exclusive discounts offer karein.",
+        "Order tracking system ko improve karein taake customers ko apne orders ka real-time status mil sake.",
+        "Referral programs ka use karein taake naye customers attract ho sakein.",
+        "Bulk order processing aur B2B clients ke liye customized pricing ka option dein.",
+        "Social media integration aur influencer marketing ka istemal karein brand awareness barhane ke liye.",
+        "Customer feedback analyze karein aur product improvements ya service enhancements karein.",
+        "Inventory aur supply chain ka analytics ka use karein taake demand ke mutabiq stock maintain ho.",
+        "AI-based recommendation engines ka use karein taake har customer ko relevant products suggest ho sakein."
+      ];
+
+      var randomTip = performanceTips[Math.floor(Math.random() * performanceTips.length)];
+
+      toastr.options = {
+        closeButton: true,
+        debug: false,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: "toast-bottom-right",
+        preventDuplicates: true,
+        showDuration: "500",
+        hideDuration: "1000",
+        timeOut: 7000,
+        extendedTimeOut: 1000,
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+      };
+
+      var toast = toastr.info(`<i class="fas fa-lightbulb"></i> <strong>Performance Tip:</strong> ${randomTip}`);
+
+      setTimeout(function () {
+        toastr.clear(toast);
+      }, 5000);
+    });
+
+    // Mobile sidebar toggle
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('-translate-x-full');
+    });
+
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
